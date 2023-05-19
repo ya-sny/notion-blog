@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import {getAllPosts} from '../lib/notionAPI';
+import { getAllPosts } from '../lib/notionAPI';
 import SinglePost from '../components/Post/SinglePost';
 
 export const getStaticProps = async () => {
