@@ -1,14 +1,14 @@
 import Head from 'next/head'
-import { getAllPosts } from '../lib/notionAPI';
+import {getAllPosts} from '../lib/notionAPI';
 import SinglePost from '../components/Post/SinglePost';
 
 export const getStaticProps = async () => {
   const allPosts = await getAllPosts();
   return {
     props: {
-      allPosts: allPosts,
+      allPosts,
     },
-    revalidate: 60,
+    revalidate: 60 * 60 * 6,
   }
 }
 
