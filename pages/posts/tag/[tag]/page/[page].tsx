@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import {getAllTags, getNumberOfPages, getNumberOfPagesByTag, getPostsByPage, getPostsByTag, getPostsByTagAndPage} from '../../../../../lib/notionAPI';
+import {getAllTags, getNumberOfPagesByTag, getPostsByTagAndPage} from '../../../../../lib/notionAPI';
 import SinglePost from '../../../../../components/Post/SinglePost';
 import Pagination from '../../../../../components/Pagination/Pagination';
 import {GetStaticPaths} from 'next';
@@ -25,7 +25,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps = async (context) => {
   const currentPage: string = context.params?.page;
   const currentTag: string = context.params?.tag.toString();
   const upperCaseCurrentTag: string = currentTag.charAt(0).toUpperCase() + currentTag.slice(1);
