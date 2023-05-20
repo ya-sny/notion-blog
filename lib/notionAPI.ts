@@ -32,8 +32,8 @@ export const getAllPosts = async () => {
 };
 
 const getPageMetaData = (post) => {
-  const getTags = (tags:string[]) => {
-    const allTags = tags.map((tag:string) => {
+  const getTags = (tags) => {
+    const allTags = tags.map((tag) => {
       return tag.name;
     });
     return allTags;
