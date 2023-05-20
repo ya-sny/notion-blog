@@ -11,19 +11,34 @@ const Navbar = () => {
         <div>
           <ul className="flex items-center text-sm py-4">
             <li>
-              <Link href="/" className="block px-4 py-2 hover:text-sky-900 transition-all duration-300">Home</Link>
+              <Link
+                href="/"
+                className="block px-4 py-2 hover:text-sky-900 transition-all duration-300"
+              >
+                Home
+              </Link>
             </li>
             <li>
-              <Link href="#" className="block px-4 py-2 hover:text-sky-900 transition-all duration-300">Twitter</Link>
+              <Link
+                href="#"
+                className="block px-4 py-2 hover:text-sky-900 transition-all duration-300"
+              >
+                Twitter
+              </Link>
             </li>
             <li>
-              <Link href="#" className="block px-4 py-2 hover:text-sky-900 transition-all duration-300">Github</Link>
+              <Link
+                href="#"
+                className="block px-4 py-2 hover:text-sky-900 transition-all duration-300"
+              >
+                Github
+              </Link>
             </li>
           </ul>
         </div>
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;

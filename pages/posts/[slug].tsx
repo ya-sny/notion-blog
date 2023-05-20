@@ -1,31 +1,32 @@
 import React from "react";
+import { getAllPosts, getSinglePost } from "../../lib/notionAPI";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import Link from "next/link";
-import {getAllPosts, getSinglePost} from "../../lib/notionAPI";
-import ReactMarkdown from "react-markdown";
-import {Prism as SyntaxHighlighter} from "react-syntax-highlighter"
-import {vscDarkPlus} from "react-syntax-highlighter/dist/cjs/styles/prism"
-import {GetStaticPaths, GetStaticProps} from "next";
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths = async () => {
   const allPosts = await getAllPosts();
-  const paths = allPosts.map(({slug}) => ({params: {slug}}))
+  const paths = allPosts.map(({ slug }) => ({ params: { slug } }));
+
   return {
     paths,
     fallback: "blocking",
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({params}) => {
-  const post = await getSinglePost(params.slug[0]);
+export const getStaticProps = async ({ params }) => {
+  const post = await getSinglePost(params.slug);
+
   return {
     props: {
       post,
     },
-    revalidate: 60 * 60 * 6,
-  }
-}
+    revalidate: 10,
+  };
+};
 
-const Post = ({post}) => {
+const Post = ({ post }) => {
   return (
     <section className="container lg:px-2 px-5 h-screen lg:w-2/5 mx-auto mt-20">
       <h2 className="w-full text-2xl font-medium">{post.metadata.title}</h2>
@@ -33,38 +34,37 @@ const Post = ({post}) => {
       <span className="text-gray-500">Posted date at {post.metadata.date}</span>
       <br />
       {post.metadata.tags.map((tag: string, index: number) => (
-        <p className="text-white bg-sky-900 rounded-xl font-medium mt-2 mx-1 px-2 inline-block" key={index}>
-          <Link href={`/posts/tag/${tag}/page/1`}>
-            {tag}
-          </Link>
+        <p
+          className="text-white bg-sky-900 rounded-xl font-medium mt-2 px-2 inline-block mr-2"
+          key={index}
+        >
+          <Link href={`/posts/tag/${tag}/page/1`}>{tag}</Link>
         </p>
-      ))
-      }
+      ))}
       <div className="mt-10 font-medium">
         <ReactMarkdown
           components={{
-            code({inline, className, children}) {
-              const match = /language-(\w+)/.exec(className || '')
+            code({ inline, className, children }) {
+              const match = /language-(\w+)/.exec(className || "");
               return !inline && match ? (
                 <SyntaxHighlighter
                   style={vscDarkPlus}
                   language={match[1]}
                   PreTag="div"
                 >
-                  {String(children).replace(/\n$/, '')}
+                  {String(children).replace(/\n$/, "")}
                 </SyntaxHighlighter>
               ) : (
-                <code>
-                  {children}
-                </code>
-              )
-            }
+                <code>{children}</code>
+              );
+            },
           }}
         >
           {post.markdown}
         </ReactMarkdown>
+
         <Link href="/">
-          <span className="mb-20 block mt-3">←Home</span>
+          <span className="pb-20 block mt-3 text-sky-900">←Home</span>
         </Link>
       </div>
     </section>
