@@ -1,5 +1,6 @@
 import {Client} from "@notionhq/client";
 import {NotionToMarkdown} from "notion-to-md";
+import {NUMBER_OF_POSTS_PAGE} from "../constants/constans";
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
@@ -11,6 +12,18 @@ export const getAllPosts = async () => {
   const posts = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID,
     page_size: 100,
+    filter: {
+      property: "Published",
+      checkbox: {
+        equals: true,
+      },
+    },
+    sorts: [
+      {
+        property: "Date",
+        direction: "descending",
+      },
+    ]
   });
   const allPosts = posts.results;
   return allPosts.map((post) => {
@@ -19,8 +32,8 @@ export const getAllPosts = async () => {
 };
 
 const getPageMetaData = (post) => {
-  const getTags = (tags) => {
-    const allTags = tags.map((tag) => {
+  const getTags = (tags:string[]) => {
+    const allTags = tags.map((tag:string) => {
       return tag.name;
     });
     return allTags;
@@ -35,7 +48,7 @@ const getPageMetaData = (post) => {
   };
 };
 
-export const getSinglePost = async (slug) => {
+export const getSinglePost = async (slug: string) => {
   const response = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID,
     filter: {
@@ -57,4 +70,54 @@ export const getSinglePost = async (slug) => {
     metadata,
     markdown: mdString.parent,
   }
+};
+
+export const getPostsFourTopPage = async (pageSize = 4) => {
+  const allPosts = await getAllPosts();
+  const fourPosts = allPosts.slice(0, pageSize);
+  return fourPosts;
+};
+
+export const getPostsByPage = async (page: number) => {
+  const allPosts = await getAllPosts();
+  const startIndex = (page - 1) * NUMBER_OF_POSTS_PAGE;
+  const endIndex = startIndex + NUMBER_OF_POSTS_PAGE;
+
+  return allPosts.slice(startIndex, endIndex);
+};
+
+export const getNumberOfPages = async () => {
+  const allPosts = await getAllPosts();
+
+  return (
+    Math.floor(allPosts.length / NUMBER_OF_POSTS_PAGE)
+    + (allPosts.length % NUMBER_OF_POSTS_PAGE > 0 ? 1 : 0)
+  );
+};
+
+export const getPostsByTagAndPage = async (tagName: string, page: number) => {
+  const allPosts = await getAllPosts();
+  const posts = allPosts.filter((post) => post.tags.find((tag: string) => tag === tagName));
+  const startIndex = (page - 1) * NUMBER_OF_POSTS_PAGE;
+  const endIndex = startIndex + NUMBER_OF_POSTS_PAGE;
+
+  return posts.slice(startIndex, endIndex);
+};
+
+export const getNumberOfPagesByTag = async (tagName: string) => {
+  const allPosts = await getAllPosts();
+  const posts = allPosts.filter((post) => post.tags.find((tag: string) => tag === tagName));
+
+  return (
+    Math.floor(posts.length / NUMBER_OF_POSTS_PAGE)
+    + (posts.length % NUMBER_OF_POSTS_PAGE > 0 ? 1 : 0)
+  );
+};
+
+export const getAllTags = async () => {
+  const allPosts = await getAllPosts();
+  const allTagsDuplicationLists = allPosts.flatMap((post) => post.tags);
+  const set = new Set(allTagsDuplicationLists);
+  const allTagsList = Array.from(set);
+  return allTagsList;
 };

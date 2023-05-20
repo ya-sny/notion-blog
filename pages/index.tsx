@@ -1,18 +1,22 @@
 import Head from 'next/head'
-import {getAllPosts} from '../lib/notionAPI';
+import Link from 'next/link'
+import {getAllPosts, getAllTags, getPostsFourTopPage} from '../lib/notionAPI';
 import SinglePost from '../components/Post/SinglePost';
+import Tag from '../components/Tag/Tag';
 
 export const getStaticProps = async () => {
-  const allPosts = await getAllPosts();
+  const fourPosts = await getPostsFourTopPage();
+  const tags = await getAllTags();
   return {
     props: {
-      allPosts,
+      fourPosts,
+      tags,
     },
     revalidate: 60 * 60 * 6,
   }
 }
 
-export default function Home({allPosts}) {
+export default function Home({fourPosts, tags}) {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -24,17 +28,20 @@ export default function Home({allPosts}) {
         <h1 className="text-5xl font-medium text-center mb-16">
           Notion Blog
         </h1>
-        {allPosts.map((post) => (
-          <div className="mx-4">
+        {fourPosts.map((post) => (
+          <div className="mx-4" key={post.id}>
             <SinglePost
               title={post.title}
               description={post.description}
               date={post.date}
               tags={post.tags}
               slug={post.slug}
+              isPaginationPage={false}
             />
           </div>
         ))}
+        <Link href="/posts/page/1" className="mb-6 lg:w-1/2 mx-auto px-5 block text-right text-sky-900">...more</Link>
+        <Tag tags={tags} />
       </main>
     </div>
   )
